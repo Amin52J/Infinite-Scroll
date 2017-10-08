@@ -2,6 +2,7 @@
  * @desc infinite scroll initializer
  * @param config {object}
  *** @param container {dom-node}
+ *** @param scrollTarget {dom-node}
  *** @param url {string}
  *** @param request {object}
  ***** @param data {object} | {string}
@@ -96,7 +97,12 @@ var InfiniteScroll = (function (config) {
     };
     var infiniteScroll = function () {
         this.infiniteScrolling = true;
-        this.container.insertAdjacentHTML('beforeend', this.loadingElement);
+        if (typeof this.loadingElement === 'string') {
+            this.container.insertAdjacentHTML('beforeend', this.loadingElement);
+        }
+        else {
+            this.container.appendChild(this.loadingElement);
+        }
         ajax({
             url: this.url,
             data: this.request.data,
@@ -115,20 +121,21 @@ var InfiniteScroll = (function (config) {
             config = {};
         }
         this.container = config.container || document.body;
+        this.scrollTarget = config.scrollTarget || this.container;
         this.url = config.url || this.container.getAttribute('data-url');
         this.request = {
             data: '',
             method: 'GET'
         };
         this.request.data = config.request && config.request.data ? config.request.data : this.request.data;
-        this.request.method = config.request && config.request.method ? config.request.method : this.request.method;
+        this.request.method = config.request && config.request.method ? config.request.method : this.container.getAttribute('data-method') || this.request.method;
         this.loading = false;
         this.loadingElement = config.loading || '<div class="infinite-scroll__loading">Loading...</div>';
         this.mode = config.mode || this.container.getAttribute('data-mode');
         this.moreButton = config.moreButton;
         this.infiniteScrolling = false;
         this.allItemsLoaded = false;
-        this.margin = config.margin || 300;
+        this.margin = config.margin || 300 || parseInt(this.container.getAttribute('data-margin'));
         this.onLoad = config.onLoad || function (resp) {
             console.log(resp);
         };
@@ -166,7 +173,7 @@ var InfiniteScroll = (function (config) {
         if (this.mode === 'button' && this.moreButton) {
             this.moreButton.removeEventListener('click', this.moreButtonClickFunction);
         }
-        else{
+        else {
             this.scrollEventTarget.removeEventListener('scroll', this.scrollFunction);
         }
     };
