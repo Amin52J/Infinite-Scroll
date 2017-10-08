@@ -144,9 +144,9 @@ var InfiniteScroll = (function (config) {
                 infiniteScroll.call(this);
             }
         }).bind(this);
-        this.scrollEventTarget = this.container.tagName.toLowerCase() === 'body' ? window : this.container;
+        this.scrollEventTarget = this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget;
         this.scrollFunction = (function () {
-            if (this.container.scrollTop > (this.container.scrollHeight - (this.container.tagName.toLowerCase() === 'body' ? window : this.container).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
+            if (this.container.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
                 infiniteScroll.call(this);
             }
         }).bind(this);
