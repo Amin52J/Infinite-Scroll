@@ -1,0 +1,28 @@
+{
+  "name": "infinite-scroll",
+  "version": "1.0.0",
+  "description": "Apply infinite scroll to your website or web-app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amin52J/Infinite-Scroll.git"
+  },
+  "keywords": [
+    "infinite",
+    "scroll",
+    "infinite",
+    "scroll",
+    "load",
+    "loading",
+    "data"
+  ],
+  "author": "Amin Jafari",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Amin52J/Infinite-Scroll/issues"
+  },
+  "homepage": "https://github.com/Amin52J/Infinite-Scroll#readme"
+}
