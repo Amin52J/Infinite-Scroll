@@ -135,7 +135,7 @@ var InfiniteScroll = (function (config) {
         this.moreButton = config.moreButton;
         this.infiniteScrolling = false;
         this.allItemsLoaded = false;
-        this.margin = config.margin || 300 || parseInt(this.container.getAttribute('data-margin'));
+        this.margin = config.margin || this.container.getAttribute('data-margin').length > 0 ? parseInt(this.container.getAttribute('data-margin')) : 300;
         this.onLoad = config.onLoad || function (resp) {
             console.log(resp);
         };
@@ -144,9 +144,9 @@ var InfiniteScroll = (function (config) {
                 infiniteScroll.call(this);
             }
         }).bind(this);
-        this.scrollEventTarget = this.container.tagName.toLowerCase() === 'body' ? window : this.container;
+        this.scrollEventTarget = this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget;
         this.scrollFunction = (function () {
-            if (this.container.scrollTop > (this.container.scrollHeight - (this.container.tagName.toLowerCase() === 'body' ? window : this.container).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
+            if (this.container.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
                 infiniteScroll.call(this);
             }
         }).bind(this);

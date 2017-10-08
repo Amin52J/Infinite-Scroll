@@ -135,7 +135,7 @@ var InfiniteScroll = (function (config) {
         this.moreButton = config.moreButton;
         this.infiniteScrolling = false;
         this.allItemsLoaded = false;
-        this.margin = config.margin || 300 || parseInt(this.container.getAttribute('data-margin'));
+        this.margin = config.margin || this.container.getAttribute('data-margin').length > 0 ? parseInt(this.container.getAttribute('data-margin')) : 300;
         this.onLoad = config.onLoad || function (resp) {
             console.log(resp);
         };
