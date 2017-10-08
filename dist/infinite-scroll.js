@@ -1,6 +1,16 @@
 /**
  * @desc infinite scroll initializer
- * @param config {Object}
+ * @param config {object}
+ *** @param container {dom-node}
+ *** @param url {string}
+ *** @param request {object}
+ ***** @param data {object} | {string}
+ ***** @param method {string}
+ *** @param loading {HTML-string}
+ *** @param mode {string}
+ *** @param moreButton {dom-node}
+ *** @param margin {number}
+ *** @param onLoad {function}
  **/
 var InfiniteScroll = (function (config) {
     var ajax = function () {
@@ -122,27 +132,44 @@ var InfiniteScroll = (function (config) {
         this.onLoad = config.onLoad || function (resp) {
             console.log(resp);
         };
+        this.moreButtonClickFunction = (function () {
+            if (!this.infiniteScrolling && !this.allItemsLoaded) {
+                infiniteScroll.call(this);
+            }
+        }).bind(this);
+        this.scrollEventTarget = this.container.tagName.toLowerCase() === 'body' ? window : this.container;
+        this.scrollFunction = (function () {
+            if (this.container.scrollTop > (this.container.scrollHeight - (this.container.tagName.toLowerCase() === 'body' ? window : this.container).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
+                infiniteScroll.call(this);
+            }
+        }).bind(this);
 
         if (this.mode === 'button') {
             if (this.moreButton) {
-                this.moreButton.addEventListener('click', (function () {
-                    if (!this.infiniteScrolling && !this.allItemsLoaded) {
-                        infiniteScroll.call(this);
-                    }
-                }).bind(this));
+                this.moreButton.addEventListener('click', this.moreButtonClickFunction);
             }
             else {
                 console.error('Please specify a moreButton inside the config or remove the button mode.');
             }
         }
         else {
-            (this.container.tagName.toLowerCase() === 'body' ? window : this.container).addEventListener('scroll', (function () {
-                if (this.container.scrollTop > (this.container.scrollHeight - (this.container.tagName.toLowerCase() === 'body' ? window : this.container).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
-                    infiniteScroll.call(this);
-                }
-            }).bind(this));
+            this.scrollEventTarget.addEventListener('scroll', this.scrollFunction);
         }
     });
+
+    constructor.prototype.allDataLoaded = function (val) {
+        this.allItemsLoaded = !!val;
+        return this;
+    };
+
+    constructor.prototype.unbind = function () {
+        if (this.mode === 'button' && this.moreButton) {
+            this.moreButton.removeEventListener('click', this.moreButtonClickFunction);
+        }
+        else{
+            this.scrollEventTarget.removeEventListener('scroll', this.scrollFunction);
+        }
+    };
 
     return new constructor(config);
 });
