@@ -53,5 +53,9 @@ Apply infinite scroll to your website or web-app.
 
         infiniteScrollInstance.unbind()
 
+### Tricks
+
+If you want to let the infinite scroll know that there are no more items to load and prevent it from sending requests again, you can set `x-last-page` header on your response from the server or return an empty string as the response.
+
 ### License
 This project is licensed under the [MIT License](https://raw.githubusercontent.com/Amin52J/Infinite-Scroll/master/LICENSE).

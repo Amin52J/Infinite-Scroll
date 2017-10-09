@@ -51,7 +51,7 @@ var InfiniteScroll = (function (config) {
                 }
                 config.complete(response);
                 if (xmlhttp.status == 200) {
-                    config.success(response);
+                    config.success(response, xmlhttp);
                 } else if (xmlhttp.status == 400) {
                     config.error(xmlhttp, xmlhttp.status, xmlhttp.responseText);
                 } else {
@@ -112,8 +112,8 @@ var InfiniteScroll = (function (config) {
                 this.infiniteScrolling = false;
                 this.container.querySelector('.infinite-scroll__loading').parentNode.removeChild(this.container.querySelector('.infinite-scroll__loading'));
             }).bind(this),
-            success: (function (resp) {
-                this.onLoad.call(this.container, resp);
+            success: (function (resp, req) {
+                this.onLoad.call(this.container, resp, req);
             }).bind(this)
         });
     };
@@ -137,8 +137,8 @@ var InfiniteScroll = (function (config) {
         this.allItemsLoaded = false;
         this.margin = config.margin || this.container.getAttribute('data-margin') ? parseInt(this.container.getAttribute('data-margin')) : 500;
         var that = this;
-        this.onLoad = config.onLoad || function (resp) {
-            if (typeof resp === 'string' && resp.length > 0) {
+        this.onLoad = config.onLoad || function (resp, req) {
+            if ((typeof resp === 'string' && resp.length > 0) || !req.getResponseHeader('x-last-page')) {
                 this.insertAdjacentHTML('beforeend', resp);
             }
             else {
