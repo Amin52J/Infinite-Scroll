@@ -138,8 +138,11 @@ var InfiniteScroll = (function (config) {
         this.margin = config.margin || this.container.getAttribute('data-margin') ? parseInt(this.container.getAttribute('data-margin')) : 500;
         var that = this;
         this.onLoad = config.onLoad || function (resp, req) {
-            if ((typeof resp === 'string' && resp.length > 0) || (!req.getResponseHeader('x-last-page') || req.getResponseHeader('x-last-page') === 'false')) {
+            if ((typeof resp === 'string' && resp.length > 0)) {
                 this.insertAdjacentHTML('beforeend', resp);
+                if (!(!req.getResponseHeader('x-last-page') || req.getResponseHeader('x-last-page') === 'false')) {
+                    that.allDataLoaded(true);
+                }
             }
             else {
                 that.allDataLoaded(true);
