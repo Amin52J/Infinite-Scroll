@@ -123,6 +123,11 @@ var InfiniteScroll = (function (config) {
         }
         this.container = config.container || document.body;
         this.scrollTarget = config.scrollTarget || this.container;
+
+        if (this.scrollTarget.tagName.toLowerCase() === 'body' && document.documentElement.clientHeight < document.body.clientHeight) {
+            this.scrollTarget = document.documentElement;
+        }
+
         this.url = config.url || this.container.getAttribute('data-url');
         this.request = {
             data: '',
@@ -153,9 +158,9 @@ var InfiniteScroll = (function (config) {
                 infiniteScrollFunction.call(this);
             }
         }).bind(this);
-        this.scrollEventTarget = this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget;
+        this.scrollEventTarget = this.scrollTarget.tagName.toLowerCase() === 'body' || this.scrollTarget.tagName.toLowerCase() === 'html' ? window : this.scrollTarget;
         this.scrollFunction = (function () {
-            if (this.scrollTarget.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
+            if (this.scrollTarget.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' || this.scrollTarget.tagName.toLowerCase() === 'html' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
                 infiniteScrollFunction.call(this);
             }
         }).bind(this);

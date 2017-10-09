@@ -1,6 +1,6 @@
 {
   "name": "infinite-scroll-loading",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Apply infinite scroll to your website or web-app.",
   "main": "dist/infinite-scroll.js",
   "repository": {
