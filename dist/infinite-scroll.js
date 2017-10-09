@@ -8,13 +8,12 @@
  ***** @param data {object} | {string}
  ***** @param method {string}
  *** @param loading {HTML-string}
- *** @param mode {string}
  *** @param moreButton {dom-node}
  *** @param margin {number}
  *** @param onLoad {function}
  **/
 var InfiniteScroll = (function (config) {
-    var ajax = function () {
+    var ajaxFunction = function () {
         var arg = arguments,
             config = {
                 async: arg[0].async || true,
@@ -78,15 +77,13 @@ var InfiniteScroll = (function (config) {
         if (config.method === 'POST') {
             xmlhttp.open(config.method, config.url, config.async);
         } else {
-            xmlhttp.open(config.method, config.url + '?' + config.data, config.async);
+            xmlhttp.open(config.method, config.url + (config.url.indexOf('?') > -1 ? '&' : '?') + config.data, config.async);
         }
         xmlhttp.responseType = '';
         xmlhttp.timeout = config.timeout;
         xmlhttp.setRequestHeader('Content-Type', config.contentType);
-        if (config.headers.length !== undefined) {
-            for (key in config.headers) {
-                xmlhttp.setRequestHeader(key, config.headers[key]);
-            }
+        for (key in config.headers) {
+            xmlhttp.setRequestHeader(key, config.headers[key]);
         }
         config.beforeSend();
         if (config.method === 'POST') {
@@ -95,18 +92,22 @@ var InfiniteScroll = (function (config) {
             xmlhttp.send();
         }
     };
-    var infiniteScroll = function () {
+    var infiniteScrollFunction = function () {
         this.infiniteScrolling = true;
+        var data = typeof this.request.data === 'function' ? this.request.data() : this.request.data;
         if (typeof this.loadingElement === 'string') {
             this.container.insertAdjacentHTML('beforeend', this.loadingElement);
         }
         else {
             this.container.appendChild(this.loadingElement);
         }
-        ajax({
+        ajaxFunction({
             url: this.url,
-            data: this.request.data,
+            data: data,
             method: this.request.method,
+            headers: {
+                'x-requested-with': 'XMLHttpRequest'
+            },
             complete: (function () {
                 this.infiniteScrolling = false;
                 this.container.querySelector('.infinite-scroll__loading').parentNode.removeChild(this.container.querySelector('.infinite-scroll__loading'));
@@ -131,33 +132,33 @@ var InfiniteScroll = (function (config) {
         this.request.method = config.request && config.request.method ? config.request.method : this.container.getAttribute('data-method') || this.request.method;
         this.loading = false;
         this.loadingElement = config.loading || '<div class="infinite-scroll__loading">Loading...</div>';
-        this.mode = config.mode || this.container.getAttribute('data-mode');
         this.moreButton = config.moreButton;
         this.infiniteScrolling = false;
         this.allItemsLoaded = false;
-        this.margin = config.margin || this.container.getAttribute('data-margin').length > 0 ? parseInt(this.container.getAttribute('data-margin')) : 300;
+        this.margin = config.margin || this.container.getAttribute('data-margin') ? parseInt(this.container.getAttribute('data-margin')) : 500;
+        var that = this;
         this.onLoad = config.onLoad || function (resp) {
-            console.log(resp);
+            if (typeof resp === 'string' && resp.length > 0) {
+                this.insertAdjacentHTML('beforeend', resp);
+            }
+            else {
+                that.allDataLoaded(true);
+            }
         };
         this.moreButtonClickFunction = (function () {
             if (!this.infiniteScrolling && !this.allItemsLoaded) {
-                infiniteScroll.call(this);
+                infiniteScrollFunction.call(this);
             }
         }).bind(this);
         this.scrollEventTarget = this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget;
         this.scrollFunction = (function () {
-            if (this.container.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
-                infiniteScroll.call(this);
+            if (this.scrollTarget.scrollTop > (this.container.scrollHeight - (this.scrollTarget.tagName.toLowerCase() === 'body' ? window : this.scrollTarget).innerHeight) - this.margin && !this.infiniteScrolling && !this.allItemsLoaded) {
+                infiniteScrollFunction.call(this);
             }
         }).bind(this);
 
-        if (this.mode === 'button') {
-            if (this.moreButton) {
-                this.moreButton.addEventListener('click', this.moreButtonClickFunction);
-            }
-            else {
-                console.error('Please specify a moreButton inside the config or remove the button mode.');
-            }
+        if (this.moreButton) {
+            this.moreButton.addEventListener('click', this.moreButtonClickFunction);
         }
         else {
             this.scrollEventTarget.addEventListener('scroll', this.scrollFunction);
@@ -166,11 +167,14 @@ var InfiniteScroll = (function (config) {
 
     constructor.prototype.allDataLoaded = function (val) {
         this.allItemsLoaded = !!val;
+        if (this.moreButton) {
+            this.moreButton.style.display = 'none';
+        }
         return this;
     };
 
     constructor.prototype.unbind = function () {
-        if (this.mode === 'button' && this.moreButton) {
+        if (this.moreButton) {
             this.moreButton.removeEventListener('click', this.moreButtonClickFunction);
         }
         else {
