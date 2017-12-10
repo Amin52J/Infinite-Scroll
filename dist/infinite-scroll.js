@@ -114,6 +114,9 @@ var InfiniteScroll = (function (config) {
             }).bind(this),
             success: (function (resp, req) {
                 this.onLoad.call(this.container, resp, req);
+            }).bind(this),
+            fail: (function () {
+                this.allDataLoaded(true);
             }).bind(this)
         });
     };
