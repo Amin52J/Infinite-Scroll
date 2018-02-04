@@ -25,6 +25,7 @@ Apply infinite scroll to your website or web-app.
 | moreButton     | DOMElement              | null                          | null          | false    |
 | margin         | Number                  | 500                           | data-margin   | false    |
 | onLoad         | Function                | null                          | null          | false    |
+| onRender         | Function                | null                          | null          | false    |
 
 ### Docs
 
@@ -37,6 +38,7 @@ Apply infinite scroll to your website or web-app.
 * **moreButton:** The button that loads the next set of data. If `moreButton` is specified, the scroll listener will be disabled.
 * **margin:** The scroll margin on which the request of the next set of data must be sent. The value is in pixels from the bottom of the scrollTop.
 * **onLoad:** A callback function to be called after the next set of data is acquired. It has the response as its parameter and the context of the function is the container element. By default if the onLoad method is not specified, it gets the response and appends it to the container.
+* **onRender:** A callback function to be called after the next set of data is rendered.
 
 ##### Methods
 
